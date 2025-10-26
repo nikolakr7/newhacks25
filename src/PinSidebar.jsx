@@ -1,62 +1,63 @@
 // src/PinSidebar.jsx
 
-function PinSidebar({ pin, onClose, filterTag }) { // <-- 1. Accept filterTag prop
+import { Box, Typography, Card, CardContent, CardMedia, Chip, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
-  // --- 2. Create a sorted list of stories ---
-  // We sort a *copy* of the stories array
+function PinSidebar({ pin, onClose, filterTag }) {
   const sortedStories = [...pin.stories].sort((a, b) => {
-    // If the filter is 'all', don't change the order
-    if (filterTag === 'all') {
-      return 0;
-    }
-    
+    if (filterTag === 'all') return 0;
     const aMatches = a.desireTag === filterTag;
     const bMatches = b.desireTag === filterTag;
-
-    if (aMatches && !bMatches) {
-      return -1; // 'a' (which matches) comes before 'b' (which doesn't)
-    } else if (!aMatches && bMatches) {
-      return 1; // 'b' (which matches) comes before 'a' (which doesn't)
-    }
-    
-    return 0; // Keep the original order for stories that are both matches or both non-matches
+    if (aMatches && !bMatches) return -1;
+    if (!aMatches && bMatches) return 1;
+    return 0;
   });
-  // --- End of new code ---
 
   return (
-    <div style={{
-      marginTop: '20px',
-      height: 'calc(100vh - 200px)', // Fill remaining height
-      overflowY: 'auto', // <-- The scrollable part
-      border: '1px solid #ccc',
-      borderRadius: '8px'
-    }}>
-      <button onClick={onClose} style={{float: 'right', border: 'none', background: 'transparent', fontSize: '1.5rem', cursor: 'pointer', padding: '10px'}}>&times;</button>
-      <h2 style={{padding: '0 15px'}}>{pin.locationName || 'Selected Location'}</h2>
+    <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', flexGrow: 1, overflow: 'hidden' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, pr: 1 }}>
+        <Typography variant="h6" component="h2" fontWeight="bold">
+          {pin.locationName || 'Selected Location'}
+        </Typography>
+        <IconButton onClick={onClose} size="small">
+          <CloseIcon />
+        </IconButton>
+      </Box>
       
-      {/* --- 3. Loop over the new sortedStories array --- */}
-      {sortedStories.map((story, index) => (
-        <div key={index} style={{
-          borderBottom: '1px solid #eee',
-          padding: '15px'
-        }}>
-          <h3 style={{marginTop: 0}}>{story.title}</h3>
-          <span style={{
-             background: '#eee', 
-             padding: '3px 8px', 
-             borderRadius: '10px', 
-             fontSize: '0.9rem'
-          }}>
-            {story.desireTag}
-          </span>
-          <p>{story.story}</p>
-          <img src={story.photoUrl} alt={story.title} style={{width: '100%', borderRadius: '5px'}} />
-        </div>
-      ))}
+      <Box sx={{ overflowY: 'auto', flexGrow: 1, pr: 1 }}>
+        {sortedStories.map((story, index) => (
+          <Card key={index} sx={{ mb: 2, boxShadow: 2 }}>
+            <CardMedia
+              component="img"
+              height="140"
+              image={story.photoUrl}
+              alt={story.title}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h6" component="div">
+                {story.title}
+              </Typography>
+              
+              {/* Only render the Chip if the tag exists */}
+              {story.desireTag && (
+                <Chip 
+                  // --- THIS IS THE CORRECTED LINE ---
+                  label={story.desireTag?.replace('_', ' ')} 
+                  color="primary" 
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+              )}
 
-      {/* This check remains the same, it just checks if the pin is empty */}
-      {pin.stories.length === 0 && <p style={{padding: '15px'}}>No stories here yet!</p>}
-    </div>
+              <Typography variant="body2" color="text.secondary">
+                {story.story}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+        {pin.stories.length === 0 && <Typography sx={{ p: 2, color: 'text.secondary' }}>No stories here yet!</Typography>}
+      </Box>
+    </Box>
   );
 }
 

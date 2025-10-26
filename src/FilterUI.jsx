@@ -1,38 +1,36 @@
 // src/FilterUI.jsx
 
-import { desireTags } from './tags'; // Import your tags
+import { desireTags } from './tags';
+import { Autocomplete, TextField } from '@mui/material';
 
-// Add "all" to the beginning of the list for filtering
 const filterOptions = ["all", ...desireTags];
 
-function FilterUI({ setFilterTag }) {
+// Format tags for display in the dropdown
+const formattedOptions = filterOptions.map(tag => ({
+  label: tag.charAt(0).toUpperCase() + tag.slice(1).replace('_', ' '),
+  value: tag
+}));
 
-  const handleFilterChange = (e) => {
-    // Check if the user's input is a valid tag.
-    const value = e.target.value.toLowerCase();
-    setFilterTag(filterOptions.includes(value) ? value : 'all');
+function FilterUI({ setFilterTag }) {
+  const handleFilterChange = (event, newValue) => {
+    // newValue will be null if cleared, or an object {label, value} if selected
+    setFilterTag(newValue ? newValue.value : 'all');
   };
 
   return (
-    <div>
-      <label htmlFor="filter-input" style={{display: 'block', margin: '10px 0 5px'}}>Filter by desire:</label>
-      
-      <input 
-        id="filter-input" 
-        list="desire-tags-list"
-        placeholder="Search or select a tag..."
-        onChange={handleFilterChange} // Call function on change
-        style={{width: '100%', padding: '10px', fontSize: '1rem', boxSizing: 'border-box', borderRadius: '5px', border: '1px solid #ccc'}}
-      />
-      
-      <datalist id="desire-tags-list">
-        {filterOptions.map(tag => (
-          <option key={tag} value={tag}>
-            {tag.charAt(0).toUpperCase() + tag.slice(1).replace('_', ' ')}
-          </option>
-        ))}
-      </datalist>
-    </div>
+    <Autocomplete
+      options={formattedOptions}
+      getOptionLabel={(option) => option.label}
+      onChange={handleFilterChange}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label="Filter by desire"
+          variant="outlined"
+        />
+      )}
+      sx={{ mt: 1 }}
+    />
   );
 }
 
