@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   // 1. ADD THIS 'base' PROPERTY
   // Replace 'newhacks25' with your GitHub repository's name
-  base: '/', 
+  base: '/newhacks25/', 
   
   // 2. ADD THIS 'build' PROPERTY
   build: {
