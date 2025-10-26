@@ -15,8 +15,7 @@ const firebaseConfig = {
   messagingSenderId: "587438600846",
 
   appId: "1:587438600846:web:810a0413a162857703cfdf"
-
-}
+};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -24,4 +23,3 @@ const app = initializeApp(firebaseConfig);
 // Export services
 export const db = getFirestore(app);
 export const storage = getStorage(app);
-//test commit and push
