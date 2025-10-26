@@ -3,7 +3,7 @@
 // src/MapPage.jsx
 
 import { useState, useRef } from 'react';
-import { useLoaderData } from 'react-router-dom';
+import { useLoaderData, useNavigate } from 'react-router-dom';
 import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
 
 // --- Components ---
@@ -41,6 +41,7 @@ function MapPage() {
 
   // 2. Get data from the loader (see main.jsx)
   const { allPins, mode } = useLoaderData();
+  const navigate = useNavigate();
 
   // 3. State
   const [filterTag, setFilterTag] =useState('all');
@@ -71,6 +72,21 @@ function MapPage() {
       
       {/* --- Column 1: UI Sidebar --- */}
       <div style={{ width: '350px', height: '100vh', padding: '10px', background: '#fff', zIndex: 1000, boxShadow: '2px 0 5px rgba(0,0,0,0.1)', overflowY: 'auto' }}>
+        {/* --- ADD THIS BUTTON --- */}
+        <button 
+          onClick={() => navigate('/')} // Navigate to the homepage on click
+          style={{
+            marginBottom: '15px',
+            padding: '8px 12px',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            border: '1px solid #ccc',
+            borderRadius: '5px'
+          }}
+        >
+          &larr; Back to Home
+        </button>
+        {/* --- END OF NEW BUTTON --- */}
         
         <h1 style={{ fontSize: '1.5rem' }}>{mode === 'find' ? 'Find Experiences' : 'Add Your Story'}</h1>
         
