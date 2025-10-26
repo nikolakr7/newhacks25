@@ -101,8 +101,13 @@ function MapPage() {
           </>
         )}
 
+        {/* --- THIS IS THE UPDATED PinSidebar --- */}
         {mode === 'find' && selectedPin && (
-          <PinSidebar pin={selectedPin} onClose={() => setSelectedPin(null)} />
+          <PinSidebar 
+            pin={selectedPin} 
+            onClose={() => setSelectedPin(null)} 
+            filterTag={filterTag} // <-- This prop has been added
+          />
         )}
       </div>
       <GoogleMap
