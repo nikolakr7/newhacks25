@@ -3,13 +3,16 @@
 import { useState } from 'react';
 import { Autocomplete } from '@react-google-maps/api';
 
-function SearchField({ mapRef, allPins, onPinSelect }) {
+// --- UPDATED ---
+// We now accept 'mode' as a prop
+function SearchField({ mapRef, allPins, mode, onPinSelect }) {
   const [autocomplete, setAutocomplete] = useState(null);
 
   const onLoad = (ac) => {
     setAutocomplete(ac);
   };
 
+  // --- THIS FUNCTION CONTAINS THE NEW LOGIC ---
   const onPlaceChanged = () => {
     if (autocomplete !== null) {
       const place = autocomplete.getPlace();
@@ -29,25 +32,37 @@ function SearchField({ mapRef, allPins, onPinSelect }) {
       mapRef.current?.panTo({ lat, lng });
       mapRef.current?.setZoom(15);
 
-      // --- This is your Core Logic ---
       // Check if a pin *already exists* at this exact location
       const existingPin = allPins.find(
         (pin) => pin.location.lat === lat && pin.location.lng === lng
       );
 
-      if (existingPin) {
-        // --- Pin exists ---
-        onPinSelect(existingPin); // Open form for existing pin
-      } else {
-        // --- No pin exists ---
-        // Open form with data for a *new* pin
-        onPinSelect({
-          location: { lat, lng },
-          locationName: locationName,
-          stories: [], // It's new, so no stories
-          desireTags: []
-        });
+      // --- THIS IS THE NEW LOGIC ---
+      if (mode === 'find') {
+        // In 'find' mode, we only care about *existing* pins
+        if (existingPin) {
+          onPinSelect(existingPin); // This calls setSelectedPin
+        } else {
+          onPinSelect(null); // Clear any previously selected pin
+          alert("No stories found for this location.");
+        }
+      } 
+      else if (mode === 'add') {
+        // In 'add' mode, we check for an existing pin or create a new one
+        if (existingPin) {
+          onPinSelect(existingPin); // This calls setFormPinData (for existing pin)
+        } else {
+          // This calls setFormPinData (for a *new* pin)
+          onPinSelect({
+            location: { lat, lng },
+            locationName: locationName,
+            stories: [],
+            desireTags: []
+          });
+        }
       }
+      // --- END OF NEW LOGIC ---
+
     } else {
       console.log('Autocomplete is not loaded yet!');
     }
