@@ -2,7 +2,8 @@
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+// --- THIS LINE IS CHANGED ---
+import { createHashRouter, RouterProvider } from "react-router-dom";
 import './index.css';
 // Delete any 'leaflet.css' or 'geosearch.css' imports
 
@@ -25,8 +26,8 @@ const mapLoader = async ({ params }) => {
   return { allPins, mode };
 };
 
-// This is your new app routing
-const router = createBrowserRouter([
+// --- THIS LINE IS CHANGED ---
+const router = createHashRouter([
   {
     path: "/",
     element: <Home />, // Your new splash page
