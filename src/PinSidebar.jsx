@@ -1,6 +1,28 @@
 // src/PinSidebar.jsx
 
-function PinSidebar({ pin, onClose }) {
+function PinSidebar({ pin, onClose, filterTag }) { // <-- 1. Accept filterTag prop
+
+  // --- 2. Create a sorted list of stories ---
+  // We sort a *copy* of the stories array
+  const sortedStories = [...pin.stories].sort((a, b) => {
+    // If the filter is 'all', don't change the order
+    if (filterTag === 'all') {
+      return 0;
+    }
+    
+    const aMatches = a.desireTag === filterTag;
+    const bMatches = b.desireTag === filterTag;
+
+    if (aMatches && !bMatches) {
+      return -1; // 'a' (which matches) comes before 'b' (which doesn't)
+    } else if (!aMatches && bMatches) {
+      return 1; // 'b' (which matches) comes before 'a' (which doesn't)
+    }
+    
+    return 0; // Keep the original order for stories that are both matches or both non-matches
+  });
+  // --- End of new code ---
+
   return (
     <div style={{
       marginTop: '20px',
@@ -12,8 +34,8 @@ function PinSidebar({ pin, onClose }) {
       <button onClick={onClose} style={{float: 'right', border: 'none', background: 'transparent', fontSize: '1.5rem', cursor: 'pointer', padding: '10px'}}>&times;</button>
       <h2 style={{padding: '0 15px'}}>{pin.locationName || 'Selected Location'}</h2>
       
-      {/* Loop over all stories for this pin */}
-      {pin.stories.map((story, index) => (
+      {/* --- 3. Loop over the new sortedStories array --- */}
+      {sortedStories.map((story, index) => (
         <div key={index} style={{
           borderBottom: '1px solid #eee',
           padding: '15px'
@@ -31,6 +53,8 @@ function PinSidebar({ pin, onClose }) {
           <img src={story.photoUrl} alt={story.title} style={{width: '100%', borderRadius: '5px'}} />
         </div>
       ))}
+
+      {/* This check remains the same, it just checks if the pin is empty */}
       {pin.stories.length === 0 && <p style={{padding: '15px'}}>No stories here yet!</p>}
     </div>
   );
