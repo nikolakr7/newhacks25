@@ -1,7 +1,16 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
+  // 1. ADD THIS 'base' PROPERTY
+  // Replace 'newhacks25' with your GitHub repository's name
+  base: '/newhacks25/', 
+  
+  // 2. ADD THIS 'build' PROPERTY
+  build: {
+    outDir: 'docs' // Build into a 'docs' folder
+  },
+  
   plugins: [react()],
 })
