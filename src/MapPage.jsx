@@ -36,7 +36,7 @@ function MapPage() {
   const [selectedPin, setSelectedPin] = useState(null);
   const [formPinData, setFormPinData] = useState(null);
   const mapRef = useRef(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Your useNavigate hook is preserved
 
   const onMapLoad = (map) => {
     mapRef.current = map;
@@ -55,7 +55,7 @@ function MapPage() {
     <div style={{ display: 'flex' }}>
       <div style={{ width: '350px', height: '100vh', padding: '10px', background: '#fff', zIndex: 1000, boxShadow: '2px 0 5px rgba(0,0,0,0.1)', overflowY: 'auto' }}>
         
-        {/* --- ADD THIS BUTTON --- */}
+        {/* --- YOUR BUTTON IS PRESERVED --- */}
         <button 
           onClick={() => navigate('/')} // Navigate to the homepage on click
           style={{
@@ -69,20 +69,38 @@ function MapPage() {
         >
           &larr; Back to Home
         </button>
-        {/* --- END OF NEW BUTTON --- */}
+        {/* --- END OF YOUR BUTTON --- */}
         
         <h1 style={{ fontSize: '1.5rem' }}>{mode === 'find' ? 'Find Experiences' : 'Add Your Story'}</h1>
-        {mode === 'find' && <FilterUI setFilterTag={setFilterTag} />}
+
+        {/* --- THIS IS THE UPDATED 'find' MODE --- */}
+        {mode === 'find' && (
+          <>
+            <p>Search for a location:</p>
+            <SearchField
+              mapRef={mapRef}
+              allPins={allPins}
+              mode={mode}
+              onPinSelect={setSelectedPin}
+            />
+            <hr style={{margin: '20px 0'}} />
+            <FilterUI setFilterTag={setFilterTag} />
+          </>
+        )}
+        
+        {/* --- THIS IS THE UPDATED 'add' MODE --- */}
         {mode === 'add' && (
           <>
             <p>Search for a location to add your story:</p>
             <SearchField
               mapRef={mapRef}
               allPins={allPins}
+              mode={mode}
               onPinSelect={setFormPinData}
             />
           </>
         )}
+
         {mode === 'find' && selectedPin && (
           <PinSidebar pin={selectedPin} onClose={() => setSelectedPin(null)} />
         )}
