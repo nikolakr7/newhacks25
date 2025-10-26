@@ -9,4 +9,5 @@ export const desireTags = [
   "live_music",
   "coffee",
   "art_gallery",
+  "tech events"
 ];
