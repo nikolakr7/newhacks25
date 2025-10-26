@@ -1,82 +1,76 @@
 // src/MapPage.jsx
+
 import { useState, useRef } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import { GoogleMap, useLoadScript, Marker, InfoWindowF } from '@react-google-maps/api';
+import { GoogleMap, useLoadScript, Marker } from '@react-google-maps/api';
+import { Box, Button, Typography, CircularProgress } from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 import SearchField from './SearchField';
 import FilterUI from './FilterUI';
 import PinSidebar from './PinSidebar';
 import AddStoryModal from './AddStoryModal';
 
+// --- REMOVED THE customPinIcon import ---
+
 const mapContainerStyle = {
   width: '100%',
   height: '100vh',
 };
-const mapCenter = {
-  lat: 43.6532,
-  lng: -79.3832,
-};
+const mapCenter = { lat: 43.6532, lng: -79.3832 };
 const mapOptions = {
-  styles: [
-    {
-      featureType: 'poi',
-      elementType: 'labels',
-      stylers: [{ visibility: 'off' }],
-    },
-  ],
+  styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }],
+  disableDefaultUI: true,
+  zoomControl: true,
 };
 
 function MapPage() {
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
-    libraries: ['places'],
+    libraries: ["places"],
   });
 
   const { allPins, mode } = useLoaderData();
+  const navigate = useNavigate();
+
   const [filterTag, setFilterTag] = useState('all');
   const [selectedPin, setSelectedPin] = useState(null);
   const [formPinData, setFormPinData] = useState(null);
+  
   const mapRef = useRef(null);
-  const navigate = useNavigate(); // Your useNavigate hook is preserved
+  const onMapLoad = (map) => { mapRef.current = map; };
 
-  const onMapLoad = (map) => {
-    mapRef.current = map;
-  };
-
-  const filteredPins = allPins.filter((pin) => {
+  const filteredPins = allPins.filter(pin => {
     if (mode === 'add') return true;
     if (filterTag === 'all') return true;
     return pin.desireTags?.includes(filterTag);
   });
-
-  if (loadError) return 'Error loading maps';
-  if (!isLoaded) return 'Loading Maps...';
+  
+  if (loadError) return <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>Error loading maps</Box>;
+  if (!isLoaded) return <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}><CircularProgress /></Box>;
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: '350px', height: '100vh', padding: '10px', background: '#fff', zIndex: 1000, boxShadow: '2px 0 5px rgba(0,0,0,0.1)', overflowY: 'auto' }}>
+    <Box sx={{ display: 'flex', height: '100vh' }}>
+      
+      {/* --- Column 1: UI Sidebar --- */}
+      <Box sx={{ width: 380, p: 2, bgcolor: 'background.paper', boxShadow: 3, zIndex: 10, display: 'flex', flexDirection: 'column' }}>
         
-        {/* --- YOUR BUTTON IS PRESERVED --- */}
-        <button 
-          onClick={() => navigate('/')} // Navigate to the homepage on click
-          style={{
-            marginBottom: '15px',
-            padding: '8px 12px',
-            fontSize: '1rem',
-            cursor: 'pointer',
-            border: '1px solid #ccc',
-            borderRadius: '5px'
-          }}
+        <Button 
+          onClick={() => navigate('/')}
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          sx={{ mb: 2, alignSelf: 'flex-start' }}
         >
-          &larr; Back to Home
-        </button>
-        {/* --- END OF YOUR BUTTON --- */}
+          Back to Home
+        </Button>
         
-        <h1 style={{ fontSize: '1.5rem' }}>{mode === 'find' ? 'Find Experiences' : 'Add Your Story'}</h1>
-
-        {/* --- THIS IS THE UPDATED 'find' MODE --- */}
+        <Typography variant="h5" component="h1" fontWeight="bold">
+          {mode === 'find' ? 'Find Experiences' : 'Add Your Story'}
+        </Typography>
+        
         {mode === 'find' && (
           <>
-            <p>Search for a location:</p>
+            <Typography variant="body1" sx={{ mt: 2, mb: 1 }}>Search for a location:</Typography>
             <SearchField
               mapRef={mapRef}
               allPins={allPins}
@@ -88,58 +82,63 @@ function MapPage() {
           </>
         )}
         
-        {/* --- THIS IS THE UPDATED 'add' MODE --- */}
         {mode === 'add' && (
-          <>
-            <p>Search for a location to add your story:</p>
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body1" sx={{ mb: 1 }}>Search for a location to add your story:</Typography>
             <SearchField
               mapRef={mapRef}
               allPins={allPins}
               mode={mode}
               onPinSelect={setFormPinData}
             />
-          </>
+          </Box>
         )}
 
-        {/* --- THIS IS THE UPDATED PinSidebar --- */}
         {mode === 'find' && selectedPin && (
           <PinSidebar 
             pin={selectedPin} 
             onClose={() => setSelectedPin(null)} 
-            filterTag={filterTag} // <-- This prop has been added
+            filterTag={filterTag}
           />
         )}
-      </div>
-      <GoogleMap
-        mapContainerStyle={mapContainerStyle}
-        center={mapCenter}
-        zoom={13}
-        options={mapOptions}
-        onLoad={onMapLoad}
-      >
-        {filteredPins.map((pin) => (
-          <Marker
-            key={pin.id}
-            position={pin.location}
-            onClick={() => {
-              if (mode === 'find') {
-                setSelectedPin(pin);
-                mapRef.current?.panTo(pin.location);
-              }
-              if (mode === 'add') {
-                setFormPinData(pin); // Passes full pin data
-              }
-            }}
-          />
-        ))}
-      </GoogleMap>
+      </Box>
+
+      {/* --- Column 2: The Map --- */}
+      <Box sx={{ flexGrow: 1 }}>
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={mapCenter}
+          zoom={13}
+          options={mapOptions}
+          onLoad={onMapLoad}
+        >
+          {filteredPins.map(pin => (
+            <Marker
+              key={pin.id}
+              position={pin.location}
+              // --- REMOVED the 'icon' prop from here ---
+              onClick={() => {
+                if (mode === 'find') {
+                  setSelectedPin(pin);
+                  mapRef.current?.panTo(pin.location);
+                }
+                if (mode === 'add') {
+                  setFormPinData(pin);
+                }
+              }}
+            />
+          ))}
+        </GoogleMap>
+      </Box>
+
+      {/* --- Modal --- */}
       {formPinData && (
-        <AddStoryModal
-          pinData={formPinData}
+        <AddStoryModal 
+          pinData={formPinData} 
           onClose={() => setFormPinData(null)}
         />
       )}
-    </div>
+    </Box>
   );
 }
 
