@@ -11,11 +11,12 @@ const styles = {
     justifyContent: 'center',
     height: '100vh',
     gap: '2rem',
-    background: '#f0f0f0'
+    background: '#e8f0fe', // softer background
   },
   title: {
-    fontSize: '3rem',
-    fontFamily: 'Arial, sans-serif'
+    fontSize: '3.5rem', // slightly bigger
+    fontFamily: 'Arial, sans-serif',
+    color: '#1e3a8a', // subtle color for emphasis
   },
   link: {
     textDecoration: 'none',
