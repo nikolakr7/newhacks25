@@ -57,7 +57,9 @@ function MapPage() {
   const filteredPins = allPins.filter(pin => {
     if (mode === 'add') return true;
     if (filterTag === 'all') return true;
-    return pin.desireTags.includes(filterTag);
+    // --- THIS IS THE FIX ---
+    // Add a '?' to safely check if desireTags exists
+    return pin.desireTags?.includes(filterTag);
   });
   
   // --- Render logic ---

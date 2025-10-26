@@ -96,7 +96,7 @@ function AddStoryModal({ pinData, onClose }) {
         <h3>{pinData.id ? `Add story to: ${pinData.locationName}` : `Create new pin at: ${pinData.locationName}`}</h3>
         <form onSubmit={handleSubmit}>
           <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} style={styles.input} required />
-          <textarea placeholder="Your story..." value={story} onChange={(e) => setStory(e.g.target.value)} style={styles.textarea} required />
+          <textarea placeholder="Your story..." value={story} onChange={(e) => setStory(e.target.value)} style={styles.textarea} required />
           
           <label htmlFor="desire-tag-select">Choose a desire tag:</label>
           <select 

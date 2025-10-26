@@ -74,3 +74,4 @@ function SearchField({ mapRef, allPins, onPinSelect }) {
   );
 }
 
+export default SearchField;
