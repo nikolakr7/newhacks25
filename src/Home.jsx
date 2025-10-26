@@ -32,7 +32,7 @@ const styles = {
 function Home() {
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>VibeMap</h1>
+      <h1 style={styles.title}>StoryPin</h1>
       
       <Link to="/map/find" style={styles.link}>
         Find Experiences
